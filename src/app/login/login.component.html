@@ -1,0 +1,36 @@
+<section class="prose-base p-5">
+  <form (submit)="handleSubmit($event)">
+    <div class="flex flex-col shadow-xl gap-4 w-1/2 mx-auto border rounded-lg p-4">
+      <header>
+        <h2 class="mt-0">Login</h2>
+      </header>
+      <div class="flex flex-col gap-2">
+        <label for="username">
+          Username
+        </label>
+        <input
+          [formControl]="username"
+          placeholder="Username"
+          class="rounded"
+          type="text"
+          id="username"
+        >
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="password">Password</label>
+        <input
+          [formControl]="password"
+          class="rounded"
+          placeholder="Password!"
+          type="password"
+          id="password"
+        >
+      </div>
+      <button
+        class="p-2 bg-blue-400 rounded active:shadow-inner active:bg-blue-500"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</section>
