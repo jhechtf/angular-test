@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Amplify, Hub } from '@aws-amplify/core';
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import config from '../config/config.json';
-import { ReplaySubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 
 Amplify.configure({
   Auth: {
@@ -19,12 +19,7 @@ Amplify.configure({
       responseType: 'code'
     }
   },
-  refreshHandlers: {
-    'developer': () => {
-
-    }
-  }
-})
+});
 
 export interface DerivedCognitoUser {
   username: string;
@@ -40,24 +35,47 @@ export interface DerivedCognitoUser {
 export class CognitoService {
   
   isLoggedIn = false;
-
-  user = new ReplaySubject<CognitoUser>();
+  user = new BehaviorSubject<DerivedCognitoUser>({
+    accessToken: '',
+    attributes: {},
+    idToken: '',
+    refreshToken: '',
+    username: ''
+  });
+  cognitouser = new ReplaySubject<CognitoUser>();
   expires_time = new Date();
 
   constructor(
-  ) {
-    Hub.listen('auth', a => {
-      if (a.payload.event === 'signIn') {
-        console.info((a.payload.data as CognitoUser).getSignInUserSession()?.getAccessToken);
-      }
-    })
-  }
+  ) { }
 
   login(username:string, password: string ) {
     return Auth.signIn(username, password)
       .then((cog: CognitoUser) => {
         this.isLoggedIn = true;
-        this.user.next(cog);
+        this.cognitouser.next(cog);
+        const session = cog.getSignInUserSession();
+        if(session) {
+          const de: DerivedCognitoUser = {
+            accessToken: session.getAccessToken().getJwtToken(),
+            attributes: {},
+            idToken: session.getIdToken().getJwtToken(),
+            refreshToken: session.getRefreshToken().getToken(),
+            username: cog.getUsername(),
+          }
+          cog.getUserData((err, data) => {
+            if (err) {
+              return;
+            }
+            if(data) {
+              for(let op of data.UserAttributes) {
+                de.attributes[op.Name] = op.Value
+              }
+            }
+            this.user.next(de);
+            return ;
+          })
+        }
+        
         return cog;
       }).catch(
         e => {

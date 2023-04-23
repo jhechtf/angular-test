@@ -13,7 +13,7 @@ export class AppComponent {
   constructor(
     private cognito: CognitoService
   ){
-    this.cognito.user.subscribe(f => {
+    this.cognito.cognitouser.subscribe(f => {
       console.info('from observer', f);
       this.something = f;
     })

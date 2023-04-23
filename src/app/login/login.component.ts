@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.sub = this.cognito.user.subscribe(user => {
+    this.sub = this.cognito.cognitouser.subscribe(user => {
       this.user = user
     });
   }

@@ -2,9 +2,10 @@
   <h1 class="mb-0 pb-0">Something</h1>
   <p>
     hello there
-    <span *ngIf="user?.getUsername()">
-      {{ user?.getUsername()}}
+    <span *ngIf="user?.username">
+      {{ user.username }}
     </span>
   </p>
+  <app-todos *ngIf="user.username !== '' "></app-todos>
 </section>
 

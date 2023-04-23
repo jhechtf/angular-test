@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CognitoService } from '../cognito.service';
-import { CognitoUser } from '@aws-amplify/auth';
+import { CognitoService, DerivedCognitoUser } from '../cognito.service';
 import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-home',
@@ -8,7 +7,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  user: CognitoUser | null = null;
+  user: DerivedCognitoUser = { username: '' } as DerivedCognitoUser;
   sub: Subscription | null = null;
   constructor(private cognito: CognitoService) {}
 
